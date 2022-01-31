@@ -18,7 +18,10 @@ namespace Assignment3.Models
         // Setup Db (?)
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=ND-5CG92747KF\\SQLEXPRESS;Initial Catalog=MovieCharactersDb;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(
+                "Data Source=ND-5CG92747KF\\SQLEXPRESS;" +
+                "Initial Catalog=MovieCharactersDb;" +
+                "Trusted_Connection=True;");
         }
     }
 }
