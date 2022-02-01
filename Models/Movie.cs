@@ -30,7 +30,7 @@ namespace Assignment3.Models
         public string Trailer { get; set; } // yt-link
 
         // Relations
-        public int FranchiseId { get; set; } // FK, doesn't have to be in a franchise, so nullable/optional
+        public int? FranchiseId { get; set; } // FK, doesn't have to be in a franchise, so nullable/optional
         public Franchise Franchise { get; set; }
         public ICollection<MovieCharacter> MovieCharacter { get; set; }
     }
