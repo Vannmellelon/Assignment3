@@ -6,11 +6,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Assignment3.Models;
+using System.Net.Mime;
 
 namespace Assignment3.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/v1/characters")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class CharactersController : ControllerBase
     {
         private readonly MovieCharacterDbContext _context;
@@ -20,14 +24,21 @@ namespace Assignment3.Controllers
             _context = context;
         }
 
-        // GET: api/Characters
+        /// <summary>
+        /// Get all characters.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Character>>> GetCharacters()
         {
             return await _context.Characters.ToListAsync();
         }
 
-        // GET: api/Characters/5
+        /// <summary>
+        /// Get specific character by id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Character>> GetCharacter(int id)
         {
@@ -41,8 +52,12 @@ namespace Assignment3.Controllers
             return character;
         }
 
-        // PUT: api/Characters/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Update a character.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="character"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCharacter(int id, Character character)
         {
@@ -72,8 +87,11 @@ namespace Assignment3.Controllers
             return NoContent();
         }
 
-        // POST: api/Characters
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Add a new character.
+        /// </summary>
+        /// <param name="character"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<Character>> PostCharacter(Character character)
         {
@@ -83,7 +101,11 @@ namespace Assignment3.Controllers
             return CreatedAtAction("GetCharacter", new { id = character.Id }, character);
         }
 
-        // DELETE: api/Characters/5
+        /// <summary>
+        /// Delete a character.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCharacter(int id)
         {
