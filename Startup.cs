@@ -34,6 +34,7 @@ namespace Assignment3
             services.AddControllers();
             services.AddDbContext<MovieCharacterDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddAutoMapper(typeof(Startup));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
