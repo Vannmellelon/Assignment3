@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 
 namespace Assignment3.Models
 {
@@ -9,10 +10,15 @@ namespace Assignment3.Models
         public DbSet<Franchise> Franchises { get; set; }
         public DbSet<MovieCharacter> JoinMovieCharacter { get; set; }
 
+        // 
+        public MovieCharacterDbContext([NotNullAttribute] DbContextOptions options) : base(options)
+        {
+        }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             // Composite Key for the MovieCharacter joining table
             modelBuilder.Entity<MovieCharacter>().HasKey(pq => new { pq.MovieId, pq.CharacterId });
 
@@ -60,14 +66,14 @@ namespace Assignment3.Models
 
 
         }
-        // Setup Db
-        // make this nice later/not hardcoded, how to...?
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(
-                "Data Source=ND-5CG92747KF\\SQLEXPRESS;" +
-                "Initial Catalog=MovieCharactersDb;" +
-                "Trusted_Connection=True;");
-        }
+        //// Setup Db
+        //// moved to JSON file appsettings
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer(
+        //        "Data Source=ND-5CG92747KF\\SQLEXPRESS;" +
+        //        "Initial Catalog=MovieCharactersDb;" +
+        //        "Trusted_Connection=True;");
+        //}
     }
 }
