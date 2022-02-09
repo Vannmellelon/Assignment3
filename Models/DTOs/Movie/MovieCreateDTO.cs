@@ -1,4 +1,6 @@
-﻿namespace Assignment3.Models.DTOs.Movie
+﻿using System.Collections.Generic;
+
+namespace Assignment3.Models.DTOs.Movie
 {
     public class MovieCreateDTO
     {
@@ -9,6 +11,5 @@
         public string Picture { get; set; }
         public string Trailer { get; set; }
         public int Franchise { get; set; }
-        public int[] Characters { get; set; }
     }
 }

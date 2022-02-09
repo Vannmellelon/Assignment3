@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Assignment3.Models;
 using System.Net.Mime;
+using AutoMapper;
+using Assignment3.Models.DTOs.Movie;
 
 namespace Assignment3.Controllers
 {
@@ -18,10 +20,12 @@ namespace Assignment3.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly MovieCharacterDbContext _context;
+        private readonly IMapper _mapper;
 
-        public MoviesController(MovieCharacterDbContext context)
+        public MoviesController(MovieCharacterDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -29,9 +33,12 @@ namespace Assignment3.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
+        public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetMovies()
         {
-            return await _context.Movies.ToListAsync();
+            return _mapper.Map<List<MovieReadDTO>>(await _context.Movies
+                .Include(m => m.MovieCharacter)
+                .ThenInclude(mc => mc.Character) // not CharacterId, hmmm, beacuase Tolist... ?
+                .ToListAsync());
         }
 
         /// <summary>
@@ -40,7 +47,7 @@ namespace Assignment3.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Movie>> GetMovie(int id)
+        public async Task<ActionResult<MovieReadDTO>> GetMovie(int id)
         {
             var movie = await _context.Movies.FindAsync(id);
 
@@ -49,7 +56,7 @@ namespace Assignment3.Controllers
                 return NotFound();
             }
 
-            return movie;
+            return _mapper.Map<MovieReadDTO>(movie);
         }
 
         /// <summary>
@@ -59,14 +66,16 @@ namespace Assignment3.Controllers
         /// <param name="movie"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMovie(int id, Movie movie)
+        public async Task<IActionResult> PutMovie(int id, MovieEditDTO movie)
         {
             if (id != movie.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(movie).State = EntityState.Modified;
+            // Map to dpmain
+            Movie domainMovie = _mapper.Map<Movie>(movie);
+            _context.Entry(domainMovie).State = EntityState.Modified;
 
             try
             {
@@ -90,15 +99,18 @@ namespace Assignment3.Controllers
         /// <summary>
         /// Add a new movie.
         /// </summary>
-        /// <param name="movie"></param>
+        /// <param name="movieCdto"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<Movie>> PostMovie(Movie movie)
+        public async Task<ActionResult<Movie>> PostMovie(MovieCreateDTO movieCdto)
         {
-            _context.Movies.Add(movie);
+            Movie domainMovie = _mapper.Map<Movie>(movieCdto);
+            _context.Movies.Add(domainMovie);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
+            return CreatedAtAction("GetMovie",
+                new { id = domainMovie.Id }
+                , _mapper.Map<MovieReadDTO>(domainMovie));
         }
 
         /// <summary>
@@ -125,5 +137,20 @@ namespace Assignment3.Controllers
         {
             return _context.Movies.Any(e => e.Id == id);
         }
+
+        //// Update Characters in a movie
+        //// unfinished.
+
+        //[HttpPut("{id}/characters")]
+        //public async Task<IActionResult> UpdateCharactersInMovie(int id, List<int> characterIds)
+        //{
+        //    if (!MovieExists(id))
+        //    {
+        //        return NotFound();
+        //    }
+
+        //   // Loop over character ids, check if the exist
+        //   // add them to movie if they do, else return some error message
+        //}
     }
 }

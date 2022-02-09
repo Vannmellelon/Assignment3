@@ -39,7 +39,7 @@ namespace Assignment3.Models
 
             // Trier movies
             modelBuilder.Entity<Franchise>().HasData(new Franchise { Id = 2, Name = "Trier movies", Description = "Movie trilogy by director Joachim Trier." });
-            modelBuilder.Entity<Movie>().HasData(new Movie { Id = 5, Title = "Verdens verste menneske", Genre = "Comedy,Drama,Romance", Director = "Joachim Trier", ReleaseYr = 2022, FranchiseId = 2 });
+            modelBuilder.Entity<Movie>().HasData(new Movie { Id = 5, Title = "Verdens verste menneske", Genre = "Comedy,Drama,Romance", Director = "Joachim Trier", Picture = "https://www.nfkino.no/sites/nfkino.no/files/styles/movie_poster/public/media-images/2021-09/PosterKinoklubbBokma%CC%8Al.jpg?itok=hBhcFy9R", ReleaseYr = 2022, FranchiseId = 2 });
             modelBuilder.Entity<Movie>().HasData(new Movie { Id = 6, Title = "Oslo, 31. august", Genre = "Drama", Director = "Joachim Trier", ReleaseYr = 2011, FranchiseId = 2 });
             modelBuilder.Entity<Movie>().HasData(new Movie { Id = 7, Title = "Reprise", Genre = "Drama", Director = "Joachim Trier", ReleaseYr = 2006, FranchiseId = 2 });
             modelBuilder.Entity<Character>().HasData(new Character { Id = 6, Name = "Julie", Alias = "Verdens verste menneske", Gender = 'F'});
@@ -66,14 +66,5 @@ namespace Assignment3.Models
 
 
         }
-        //// Setup Db
-        //// moved to JSON file appsettings
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseSqlServer(
-        //        "Data Source=ND-5CG92747KF\\SQLEXPRESS;" +
-        //        "Initial Catalog=MovieCharactersDb;" +
-        //        "Trusted_Connection=True;");
-        //}
     }
 }

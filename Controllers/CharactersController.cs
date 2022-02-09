@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Assignment3.Models;
 using System.Net.Mime;
+using AutoMapper;
+using Assignment3.Models.DTOs.Character;
 
 namespace Assignment3.Controllers
 {
@@ -18,10 +20,12 @@ namespace Assignment3.Controllers
     public class CharactersController : ControllerBase
     {
         private readonly MovieCharacterDbContext _context;
+        private readonly IMapper _mapper;
 
-        public CharactersController(MovieCharacterDbContext context)
+        public CharactersController(MovieCharacterDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -29,9 +33,12 @@ namespace Assignment3.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Character>>> GetCharacters()
+        public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetCharacters()
         {
-            return await _context.Characters.ToListAsync();
+            return _mapper.Map<List<CharacterReadDTO>>(await _context.Characters
+                .Include(c => c.MovieCharacter)
+                .ThenInclude(mc => mc.Movie)
+                .ToListAsync());
         }
 
         /// <summary>
@@ -40,7 +47,7 @@ namespace Assignment3.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Character>> GetCharacter(int id)
+        public async Task<ActionResult<CharacterReadDTO>> GetCharacter(int id)
         {
             var character = await _context.Characters.FindAsync(id);
 
@@ -49,7 +56,7 @@ namespace Assignment3.Controllers
                 return NotFound();
             }
 
-            return character;
+            return _mapper.Map<CharacterReadDTO>(character);
         }
 
         /// <summary>
@@ -65,8 +72,8 @@ namespace Assignment3.Controllers
             {
                 return BadRequest();
             }
-
-            _context.Entry(character).State = EntityState.Modified;
+            Character domainCharacter = _mapper.Map<Character>(character);
+            _context.Entry(domainCharacter).State = EntityState.Modified;
 
             try
             {

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Assignment3.Models;
 using System.Net.Mime;
+using AutoMapper;
+using Assignment3.Models.DTOs.Franchise;
 
 namespace Assignment3.Controllers
 {
@@ -18,10 +20,12 @@ namespace Assignment3.Controllers
     public class FranchisesController : ControllerBase
     {
         private readonly MovieCharacterDbContext _context;
+        private readonly IMapper _mapper;
 
-        public FranchisesController(MovieCharacterDbContext context)
+        public FranchisesController(MovieCharacterDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -29,9 +33,9 @@ namespace Assignment3.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Franchise>>> GetFranchises()
+        public async Task<ActionResult<IEnumerable<FranchiseReadDTO>>> GetFranchises()
         {
-            return await _context.Franchises.ToListAsync();
+            return _mapper.Map<List<FranchiseReadDTO>>(await _context.Franchises.Include(f => f.Movies).ToListAsync());
         }
 
         /// <summary>
@@ -40,9 +44,9 @@ namespace Assignment3.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Franchise>> GetFranchise(int id)
+        public async Task<ActionResult<FranchiseReadDTO>> GetFranchise(int id)
         {
-            var franchise = await _context.Franchises.FindAsync(id);
+            var franchise = _mapper.Map<FranchiseReadDTO>(await _context.Franchises.FindAsync(id));
 
             if (franchise == null)
             {
@@ -125,5 +129,7 @@ namespace Assignment3.Controllers
         {
             return _context.Franchises.Any(e => e.Id == id);
         }
+
+        // Update movies in a franchise
     }
 }
